@@ -7,7 +7,7 @@ description: 使用 Page Zero MCP 查閱關鍵字與 AI 能見度歷史，或依
 
 查歷史時用 `listTrackedKeywords`、`listTrackedPrompts`、`getTrackingSchedule` 取得真實目標識別，再用相應樣本與趨勢工具。沿回傳游標讀完所需資料，保留平台、期間、時區與取樣時間。沒有樣本不等於排名為零，未找到排名與供應商失敗分開呈現。
 
-使用者要開始追蹤時，才使用目前提供的 `trackKeyword` 或 `trackPrompt`，帶site_id及業務欄位，不傳operation_id。工具沿用原生追蹤流程，回傳target_id與workflow_run_id；重送可能再次啟動及扣費。提示詞目前須明選已支援平台，Claude與Perplexity維持費率未核實的限制，省略平台也可能被拒絕。依getTrackingSchedule的keyword_id或listTrackedPrompts的next_run_at呈現排程，不把已啟動說成已有新樣本。之後以getWorkflowResult的workflow_run_id與樣本工具讀取結果。
+使用者要開始追蹤時，才使用目前提供的 `trackKeyword` 或 `trackPrompt`，帶site_id及業務欄位，不傳operation_id。工具沿用原生追蹤流程，回傳target_id與workflow_run_id；重送可能再次啟動及扣費。提示詞目前僅支援 `openai`、`google`、`google_ai_overview`、`google_ai_mode`，須透過 `platforms` 明確選擇；省略或選擇未支援的平台會拒絕。依getTrackingSchedule的keyword_id或listTrackedPrompts的next_run_at呈現排程，不把已啟動說成已有新樣本。之後以getWorkflowResult的workflow_run_id與樣本工具讀取結果。
 
 使用者要停止追蹤時，用目前提供的 `untrackKeyword` 或 `untrackPrompt`。只需site_id與目標識別，不傳operation_id。直接封存目標並停止後續排程，保留歷史；已受理工作仍可能繼續。若還要求停止已受理工作，引導使用者使用站內既有取消功能。MCP不提供取消工具，不承諾供應商撤回或退款。
 
