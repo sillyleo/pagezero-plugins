@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "pagezero": {
+      "type": "http",
+      "url": "https://getpagezero.com/api/mcp"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "pagezero",
+  "description": "Page Zero MCP 與公開任務技能。",
+  "owner": { "name": "Solo Works" },
+  "plugins": [
+    {
+      "name": "pagezero",
+      "source": "./plugins/pagezero",
+      "description": "Page Zero MCP 與網站分析、追蹤、內容改善及 SDK 安裝技能。"
+    }
+  ]
+}
