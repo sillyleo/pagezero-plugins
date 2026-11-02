@@ -1,6 +1,8 @@
 # Page Zero plugin
 
-透過既有 Page Zero 帳號使用正式 MCP，並提供五份公開任務技能。Codex 使用 `plugins/pagezero/` 下的 Agent Plugins manifest 與 `mcp.json`；Claude Code 使用 `.claude-plugin/plugin.json` 與 `.mcp.json`。兩者共用 `skills/`，不需要本機 MCP 程序。
+透過既有 Page Zero 帳號使用正式 MCP，並提供五份公開任務技能。Codex 使用官方支援的 `.codex-plugin/plugin.json`，明確載入 `./.mcp.json` 與 `./skills/`；Claude Code 使用 `.claude-plugin/plugin.json`。兩者共用 `.mcp.json` 與五份 skills，不需要本機 MCP 程序。
+
+採用此格式是為了支援仍未載入 portable MCP 設定的 Codex App 版本，避免只安裝 skills 卻漏載 MCP。
 
 ## 安裝
 
@@ -13,7 +15,14 @@ codex plugin marketplace add sillyleo/pagezero-plugins
 codex plugin add pagezero@pagezero
 ```
 
-安裝後開啟新的工作階段。首次連線依宿主提示登入 Page Zero，選擇工作區、網站及授權範圍。Codex 使用 CIMD 發現用戶端，不需要在 plugin 內放 client secret。
+CLI 安裝只代表套件已安裝，不代表 OAuth 已完成。在 Codex App 開啟 Page Zero 外掛設定，依連線提示完成 Page Zero 登入與授權，再開啟新的工作階段。確認 MCP 可呼叫 `getConnectionInfo`、`listSites` 後，才查詢指定網站。OAuth 使用 CIMD，不需要在 plugin 內放 client secret。
+
+已安裝 `0.1.0` 的使用者先更新 marketplace，再重新安裝新版：
+
+```sh
+codex plugin marketplace upgrade pagezero
+codex plugin add pagezero@pagezero
+```
 
 ### Claude Code
 

@@ -1,8 +1,0 @@
-{
-  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
-  "name": "pagezero",
-  "version": "0.1.0",
-  "description": "透過 Page Zero MCP 查詢授權網站、安裝 SDK、分析流量與追蹤、改善 AEO 內容。",
-  "author": { "name": "Solo Works" },
-  "homepage": "https://getpagezero.com"
-}

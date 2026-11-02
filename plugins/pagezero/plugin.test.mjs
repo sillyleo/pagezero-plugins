@@ -7,35 +7,37 @@ import test from "node:test";
 const root = fileURLToPath(new URL("./", import.meta.url));
 const repo = resolve(root, "../..");
 const json = path => JSON.parse(readFileSync(path, "utf8"));
-const portable = json(resolve(root, "plugin.json"));
+const desktop = json(resolve(root, ".codex-plugin/plugin.json"));
 const claude = json(resolve(root, ".claude-plugin/plugin.json"));
 
 test("both native catalogs resolve the same self-contained plugin", () => {
-  assert.deepEqual(claude, Object.fromEntries(Object.entries(portable).filter(([key]) => key !== "$schema")));
+  assert.deepEqual(desktop, { ...claude, skills: "./skills/", mcpServers: "./.mcp.json" });
   for (const path of [".agents/plugins/marketplace.json", ".claude-plugin/marketplace.json"]) {
     const catalog = json(resolve(repo, path));
     assert.equal(catalog.name, "pagezero");
     assert.equal(catalog.plugins.length, 1);
     const plugin = catalog.plugins[0];
-    assert.equal(plugin.name, portable.name);
+    assert.equal(plugin.name, desktop.name);
     const source = typeof plugin.source === "string" ? plugin.source : plugin.source.path;
     assert.equal(realpathSync(resolve(repo, source)) + sep, realpathSync(root) + sep);
   }
 });
 
-test("each host uses its native HTTP transport without bundled credentials", () => {
-  const codex = json(resolve(root, "mcp.json")).mcpServers.pagezero;
-  const claude = json(resolve(root, ".mcp.json")).mcpServers.pagezero;
-  assert.equal(codex.type, "streamable-http");
-  assert.equal(claude.type, "http");
-  assert.equal(codex.url, "https://getpagezero.com/api/mcp");
-  assert.equal(claude.url, codex.url);
-  assert.deepEqual(codex.extensions["com.openai"].auth, { type: "oauth", client: { mode: "cimd" } });
-  for (const server of [codex, claude]) {
-    assert.equal(new URL(server.url).username, "");
-    assert.equal(new URL(server.url).search, "");
-    for (const key of ["headers", "env", "command", "args", "clientSecret"]) assert.equal(key in server, false);
-  }
+test("Codex desktop compatibility manifest explicitly wires the MCP server", () => {
+  assert.equal(realpathSync(resolve(root, desktop.skills)), realpathSync(resolve(root, "skills")));
+  const servers = json(resolve(root, desktop.mcpServers)).mcpServers;
+  assert.deepEqual(Object.keys(servers), ["pagezero"]);
+  assert.equal(servers.pagezero.url, "https://getpagezero.com/api/mcp");
+  assert.equal(servers.pagezero.type, "http");
+});
+
+test("both hosts share the HTTP connection without bundled credentials", () => {
+  const server = json(resolve(root, desktop.mcpServers)).mcpServers.pagezero;
+  assert.equal(server.type, "http");
+  assert.equal(server.url, "https://getpagezero.com/api/mcp");
+  assert.equal(new URL(server.url).username, "");
+  assert.equal(new URL(server.url).search, "");
+  for (const key of ["headers", "env", "command", "args", "clientSecret"]) assert.equal(key in server, false);
 });
 
 test("all five public workflows ship inside the plugin with explicit site selection", () => {
